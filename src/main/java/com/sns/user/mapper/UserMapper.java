@@ -7,5 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface UserMapper {
+	
+	// input: X output : List<Map>
 	public List<Map<String , Object>> selectUserList();
 }
