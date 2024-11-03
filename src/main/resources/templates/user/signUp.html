@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/defaultLayout}">
+    <section layout:fragment="content" class="contents d-flex justify-content-center">
+        <div class="sign-up-box">
+            <h1 class="m-4 text-center">회원가입</h1>
+            <form id="signUpForm" method="post" action="/user/sign-up">
+                <!-- ID Field -->
+                <div class="form-group">
+                    <label for="loginId" class="sign-up-subject">ID</label>
+                    <div class="d-flex align-items-center">
+                        <input type="text" id="loginId" name="loginId" class="form-control mr-2" placeholder="ID를 입력해주세요">
+                        <button type="button" id="loginIdCheckBtn" class="btn btn-primary">중복확인</button>
+                    </div>
+                    <div id="idCheckLength" class="small text-danger d-none">ID를 4자 이상 입력해주세요.</div>
+                    <div id="idCheckDuplicated" class="small text-danger d-none">이미 사용중인 ID입니다.</div>
+                    <div id="idCheckOk" class="small text-success d-none">사용 가능한 ID 입니다.</div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password" class="sign-up-subject">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호를 입력하세요">
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="form-group">
+                    <label for="confirmPassword" class="sign-up-subject">Confirm password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="비밀번호를 확인해주세요">
+                </div>
+
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="name" class="sign-up-subject">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력하세요">
+                </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email" class="sign-up-subject">이메일</label>
+                    <input type="text" id="email" name="email" class="form-control" placeholder="이메일을 입력하세요">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                    <button type="submit" id="signUpBtn" class="btn btn-primary btn-block">가입하기</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <th:block layout:fragment="script">
+        <script>
+            $(document).ready(function(e){
+            	// 아이디 중복 확인
+            	$("#loginIdCheckBtn").on("click", function(){
+            		// 문구를 안보이게 초기화 
+					$("#idCheckLength").addClass("d-none");
+					$("#idCheckDuplicated").addClass("d-none");
+					$("#idCheckOk").addClass("d-none");
+            		
+            		
+            		// alert("중복 확인");
+            		let loginId = $("input[name=loginId]").val().trim()
+            			
+            		
+            		// validation
+            		if(loginId.length < 4) {
+            			$("#idCheckLength").removeClass("d-none");
+            			return;
+            		}
+            		
+            		// 아이디 중복확인 AJAX 
+             		$.ajax({
+            			// request
+            			// type를 생략하면 GET 요청 
+            			url:"/user/is-duplicate-id"
+						, data:{"loginId":loginId}
+            			
+            			// response
+            			, success:function(data){
+            				if (data.code == 200) {
+            					if(data.is_duplicate_id) {
+	            					// 중복
+	            					$("#idCheckDuplicated").removeClass("d-none");
+            					} else {
+            						//  사용 가능 
+            						$("#idCheckOk").removeClass("d-none")
+            					}
+            				} 
+            			}
+            			, error:function(e){
+            				alert("다른 아이디를 입력해주세요")
+            			}
+            			
+            		});   		
+            	});
+            	// 회원 가입
+            	$("#signUpForm").on("submit", function(e){
+            		e.preventDefault(); // 서브밋 중단 (화면 이동 X)
+            		// alert("회원 가입");
+            		
+            		
+            		// validation (DB에서 확인 해보니 필수 파라미터가 4개 존재)
+            		let loginId = $("#loginId").val().trim();
+            		let password = $("#password").val().trim(); // password는 trim 함수 제거해도 괜찮다.
+            		let confirmPassword = $("#confirmPassword").val().trim(); // 비밀번호 확인 / password는 trim 함수 제거해도 괜찮다.
+            		let name = $("#name").val().trim();
+            		let email = $("#email").val().trim();
+          			
+            		// 아이디 입력확인 
+            		if(!loginId) { // 아이디가 입력되지 않았을 때 
+            			alert("아이디를 입력해주세요."); // 아이디 입력해주세요 출력
+            			return false; // submit일 땐 false
+            		}
+            		
+            		// 비밀번호 & 비밀번호 입력 확인 
+            		if(!password || !confirmPassword){ // 둘 중 하나라도 입력이 되지 않았다면 
+            			alert("비밀번호를 입력해주세요"); // 비밀번호를 입력해주세요를 출력 
+            			return false;
+            		}
+            		// 비밀번호 일치 확인 
+            		if(password != confirmPassword){ // 비밀번호가 일치하지 않으면
+            			alert("비밀번호가 일치하지 않습니다."); // 비밀번호가 일치하지 않습니다 출력
+            			return false;
+            		}
+            		// 이름 입력 확인 
+            		if(!name) { // 이름이 입력 되지 않았다면 
+            			alert("이름을 입력해주세요."); // 이름을 입력해주세요 출력 
+            			return false;
+            		}
+            		// 정규표현식 사용 이름 체크 
+            		let namePattern = /^[가-힣]{2,}$/; // 한글 2글자 이상의 이름 패턴
+            		if (!namePattern.test(name)) {
+            		    alert("올바른 이름 형식이 아닙니다."); // 이름 형식이 올바르지 않으면 출력
+            		    return false;
+            		}
+            		
+            		// 이메일 입력 확인  
+            		if(!email) { // 이메일 입력 되지 않았다면 
+            			alert("이메일을 입력해주세요."); // 이메일을 입력해주세요 출력 
+            			return false;
+            		}
+            		// 정규표현식 사용 이메일 체크 
+            		let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 형식 체크 패턴
+            		if (!emailPattern.test(email)) {
+            		    alert("올바른 이메일 형식이 아닙니다."); // 이메일 형식이 올바르지 않으면 출력
+            		    return false;
+            		}
+            		
+            		// loginId 중복확인 후 
+            		// #idCheckOK d-none가 있다면 alert
+            		if($("#idCheckOk").hasClass("d-none")) {
+            			alert("아이디 중복확인을 해주세요");
+            			return false;
+            		}
+            		// 서버에 보내기 
+            		// 1) form 전송 => 다음 화면으로 이동
+            		// $(this)[0].submit();
+            		
+            		// 2) ajax => 응답이 JSON 
+            		
+            		let url = $(this).attr("action");
+            		console.log(url);
+            		let params = $(this).serialize(); // 폼태그의 Name 속성과 value를 직렬화 => request 파라미터로 구성한 것.
+            		console.log(params);
+            		
+            		// requset
+            		$.post(url, params) // String 또는 JSON형태로 보내도 상관없다.
+            		
+            		// response - collback
+            		.done(function(data){
+            			if(data.code == 200) {
+            				// 성공
+            				alert("가입을 환영합니다. 다시 로그인 해주세요.");
+            				location.href = "/user/sign-in-view";
+            			} else {
+            				// 로직 상 실패
+            				alert(data.error_message);
+            				
+            			}
+            		});
+            		
+            		
+				
+            	});
+            });
+        </script>
+    </th:block>
+</html>
