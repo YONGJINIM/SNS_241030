@@ -64,14 +64,8 @@ public class UserRestController {
 				@RequestParam("name") String name,
 				@RequestParam("email") String email){
 			
-			// 암호화 알고리즘 적용 - 해싱알고리즘 적용
-			// pw:aaaa -> 74b8733745420d4d33f80c4663dc5e5
-			// pw:bbbb -> 74b8733745420d4d33f80c4663dc5e5
-			// common 패키지 생성 후 EncryptUtils 클래스 생성 
-			String hashedPassword = EncryptUtils.md5(password);
-			
 			// db insert
-			 UserEntity user = userBO.addUser(loginId, hashedPassword, name, email);
+			 UserEntity user = userBO.addUser(loginId, password, name, email);
 			
 			// 응답 값 
 			Map<String, Object> result = new HashMap<>(); // 브레이크 포인트로 확인

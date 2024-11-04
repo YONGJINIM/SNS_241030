@@ -25,11 +25,17 @@ public class UserBO {
 	// output :  UserEntity
 	public UserEntity addUser(String loginId, String password,
 			String name, String email) {
+		
+		// 암호화 알고리즘 적용 - 해싱알고리즘 적용
+		// pw:aaaa -> 74b8733745420d4d33f80c4663dc5e5
+		// pw:bbbb -> 74b8733745420d4d33f80c4663dc5e5
+		// common 패키지 생성 후 EncryptUtils 클래스 생성 
+		String hashedPassword = EncryptUtils.md5(password);
 		// 실질적인 오류 발생시 null return이 안됨 (try-catch로 예외처리 해야함)
 		return userRepository.save(
 				UserEntity.builder()
 				.loginId(loginId)
-				.password(password)
+				.password(hashedPassword)
 				.name(name)
 				.email(email)
 				.build());			

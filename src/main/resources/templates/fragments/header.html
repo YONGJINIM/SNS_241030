@@ -7,10 +7,18 @@
             <div class="logo">
                 <h1 class="text-primary mb-0">SNS</h1>
             </div>
-            <!-- User Greeting and Login -->
-            <div class="user-info text-right">
-                <span>님 안녕하세요</span>
-                <a href="#" class="login-link ml-2">로그인</a>
+            <!-- 로그인이 되어 있을 때 -->
+            <div th:if="${session.userName != null}">
+            	<div class="user-info text-right">
+                	<span th:text="${session.userName} + '님 안녕하세요'"></span>
+               	 <a href="/user/sign-out" class="login-link ml-2">로그아웃</a>
+            	</div>
+            </div>
+            <!-- 비 로그인 일 때 -->	
+            <div th:unless="${session.userName != null}">
+            	<div class="user-info text-right">
+               	 <a href="/user/sign-in-view" class="login-link ml-2">로그인</a>
+            	</div>
             </div>
         </div>    
     </header>
