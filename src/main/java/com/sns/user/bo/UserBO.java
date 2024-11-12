@@ -54,7 +54,10 @@ public class UserBO {
 		return userRepository.findByLoginIdAndPassword(loginId , hashedPassword);
 	}
 	
-	
+	public UserEntity getUserEntityById(
+			int userId) {
+		return userRepository.findById(userId).orElse(null);
+	}
 	
 	
 }

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.sns.common.EncryptUtils;
 import com.sns.user.bo.UserBO;
 import com.sns.user.entity.UserEntity;
 
@@ -23,8 +23,7 @@ public class UserRestController {
 
 	@Autowired
 	private UserBO userBO;
-	
-	
+
 	/**
 	 * 아이디 중복 확인 
 	 * @param loginId
@@ -45,7 +44,7 @@ public class UserRestController {
 		// 응답 값
 		Map<String, Object> result = new HashMap<>(); // 브레이크 포인트 
 		result.put("code", 200);
-		result.put("is_duplicate_id", false);
+		result.put("is_duplicate_id", isDuplicate);
 		return result;
 		
 	}
@@ -105,5 +104,5 @@ public class UserRestController {
 		}
 		return result;
 		}
-		
+				
 }

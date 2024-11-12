@@ -9,7 +9,7 @@
             <form id="signUpForm" method="post" action="/user/sign-up">
                 <!-- ID Field -->
                 <div class="form-group">
-                    <label for="loginId" class="sign-up-subject">ID</label>
+                    <label for="loginId" class="sign-up-subject">아이디</label>
                     <div class="d-flex align-items-center">
                         <input type="text" id="loginId" name="loginId" class="form-control mr-2" placeholder="ID를 입력해주세요">
                         <button type="button" id="loginIdCheckBtn" class="btn btn-primary">중복확인</button>
@@ -21,19 +21,19 @@
 
                 <!-- Password Field -->
                 <div class="form-group">
-                    <label for="password" class="sign-up-subject">Password</label>
+                    <label for="password" class="sign-up-subject">비밀번호</label>
                     <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호를 입력하세요">
                 </div>
 
                 <!-- Confirm Password Field -->
                 <div class="form-group">
-                    <label for="confirmPassword" class="sign-up-subject">Confirm password</label>
+                    <label for="confirmPassword" class="sign-up-subject">비밀번호 확인</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="비밀번호를 확인해주세요">
                 </div>
 
                 <!-- Name Field -->
                 <div class="form-group">
-                    <label for="name" class="sign-up-subject">Name</label>
+                    <label for="name" class="sign-up-subject">이름</label>
                     <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력하세요">
                 </div>
 
@@ -45,7 +45,7 @@
 
                 <!-- Submit Button -->
                 <div class="text-center mt-4">
-                    <button type="submit" id="signUpBtn" class="btn btn-primary btn-block">가입하기</button>
+                    <button type="submit" id="signUpBtn" class="btn btn-primary btn-block">회원가입</button>
                 </div>
             </form>
         </div>
@@ -121,6 +121,14 @@
             			alert("비밀번호를 입력해주세요"); // 비밀번호를 입력해주세요를 출력 
             			return false;
             		}
+            		
+            		// 비밀번호 유효성 검사 (특수 문자 포함, 8자 이상)
+            		let passwordPattern = /^(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            		if (!passwordPattern.test(password)) {
+            		    alert("비밀번호는 특수 문자를 포함하고 최소 8자 이상이어야 합니다.");
+            		    return false;
+            		}
+            	
             		// 비밀번호 일치 확인 
             		if(password != confirmPassword){ // 비밀번호가 일치하지 않으면
             			alert("비밀번호가 일치하지 않습니다."); // 비밀번호가 일치하지 않습니다 출력

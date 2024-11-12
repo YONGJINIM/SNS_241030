@@ -86,32 +86,93 @@ h1 {
 
 #writeTextArea {
     resize: none;
-    min-height: 100px;
+    min-height: 120px; /* 글자 입력 영역 크기 확장 */
     font-size: 1em;
-    padding: 10px;
+    padding: 12px; /* 여백 증가 */
+    border: 1px solid #ddd; /* 테두리 추가 */
+    border-radius: 5px; /* 모서리 둥글게 */
 }
 
+.write-box .d-flex {
+    align-items: center; /* 버튼과 파일 업로드 영역을 세로로 중앙 정렬 */
+}
+
+#writeBtn {
+    padding: 8px 20px;
+    font-size: 1em; /* 버튼 크기 적당히 조정 */
+    background-color: #007bff; /* 기본 파란색 */
+    border-radius: 5px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#writeBtn:hover {
+    background-color: #0056b3; /* 버튼 호버 효과 */
+}
+
+/* File Upload Styles */
+#fileUploadBtn img {
+    cursor: pointer; /* 클릭할 수 있는 커서 */
+    transition: transform 0.2s ease; /* 부드러운 애니메이션 효과 */
+}
+
+#fileUploadBtn:hover img {
+    transform: scale(1.1); /* 마우스 오버 시 아이콘 크기 증가 */
+}
+
+/* Timeline Card Styles */
 .timeline-box .card {
     background-color: #fff;
     border-radius: 8px;
     padding: 15px;
-    margin-top: 15px;
+    margin-top: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-like {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.card-like .like-btn {
+    margin-right: 8px;
+}
+
+.card-comment-title {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.card-post {
+    margin-top: 10px;
+    font-size: 1em;
 }
 
 .card-comment {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
+
+.comment-write input {
+    margin-right: 10px;
+    width: 80%;
+}
+
 .comment-btn {
-    padding: 4px 10px; /* Adjust padding as needed */
-    font-size: 14px;   /* Adjust font size to fit within the button */
-    line-height: 1.5;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px; /* Set a width if needed */
+    font-size: 0.9em;
+    padding: 5px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comment-btn:hover {
+    background-color: #0056b3;
 }
