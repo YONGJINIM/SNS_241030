@@ -24,10 +24,10 @@ public class TimelineBO {
 	private final CommentBO commentBO;
 	private final LikeBO likeBO;
 	
-	// input : X
+	// input : userId(세션) 비로그인 null 가능 로그인된 유저  
 	// output : List<CardDTO>
 	// TimelineBO 클래스의 generateCardList 메서드 수정
-	public List<CardDTO> generateCardList() {
+	public List<CardDTO> generateCardList(Integer userId) {
 	    List<CardDTO> cardList = new ArrayList<>();
 	    
 	    // 글 목록을 가져옴
@@ -49,6 +49,12 @@ public class TimelineBO {
 	        // 좋아요 갯수
 	        card.setLikeCount(likeBO.getLikeCountByPostId(postEntity.getId()));
 	        
+	        // 하트 채우는 경우 
+	        // 비로그인 => 빈 하트 
+	        // 로그인 => 누른적이 없음 빈 하트 
+	        // 로그인 => 누른적 있음 채워진 하트 
+	        card.setFilledLike(likeBO.filledLikeByPostIdUserId(postEntity.getId(), userId));
+	        //card.setFilledLike(likeBO.filledLikeByPostIdUserId(postEntity.getId(), userId));
 	        
 	        // cardList에 추가
 	        cardList.add(card);
