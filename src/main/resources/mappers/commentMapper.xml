@@ -40,4 +40,11 @@
 		WHERE
 			`id` =  #{commentId}
 	</delete>
+	<delete id="deleteCommentByPostId">
+		DELETE
+		FROM	
+			`comment`
+		WHERE
+			`postId` =  #{postId}
+	</delete>
 </mapper>

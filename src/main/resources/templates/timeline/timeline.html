@@ -18,7 +18,7 @@
 					<!-- 이미지에 마우스 올리면 마우스 커서가 link로 변경 -->
 					<a href="#" id="fileUploadBtn"><img width="35" src="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-512.png"></a>
 					
-					<div id="fileName" class="ml-2"></div>
+					<div id="fileName" class="ml-2">파일명</div>
 				</div>
 				<button id="writeBtn" class="btn btn-info">게시</button>
 			</div>
@@ -34,8 +34,8 @@
 					<span class="font-weight-bold" th:text="${card.user.loginId}">글쓴이</span>
 					
 					<!-- 더보기 ...(로그인 된 사람과 글쓴이 정보 일치할 때 보이게) -->
-					<a href="#" class="more-btn">
-						<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
+					<a th:if="${session.userId == card.post.userId}" href="#" class="more-btn" data-toggle="modal" data-target="#modal" th:data-post-id="${card.post.id}">
+					    <img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
 					</a>
 				</div>
 				
@@ -88,7 +88,23 @@
 				</div> <!-- 댓글 끝 -->
 			</div> <!-- 카드 끝 -->
 		</div> <!-- 타임라인 박스 끝 -->
-	</div> <!-- 컨텐츠 박스 끝 -->
+		<!-- Modal 타임리프 레이아웃 때문에 Section(fragment) 태그 안쪽에 위치-->
+		<div class="modal fade" id="modal">
+			 <!-- modal-sm: 작은 모달창 -->
+			 <!-- modal-dialog-centered: 수직 기준 가운데 -->
+			 <div class="modal-dialog modal-sm modal-dialog-centered">
+			   <div class="modal-content text-center">
+			   	<div class="py-3">
+			   		<a href="#" id="postDelBtn">삭제하기</a>
+			   	</div>
+			   	<div class="py-3 border-top"> 
+			   		<a href="#" data-dismiss="modal">취소</a>
+			   	</div>
+			   </div>
+			 </div>
+		</div>
+			</div> <!-- 컨텐츠 박스 끝 -->
+	
 </section>
 
 <th:block layout:fragment="script">
@@ -102,7 +118,8 @@
 			});
 			
 			// 파일이 선택될 때   1) 유효성 체크  2) 파일명 노출
-			$("#file").on("input", function(e) {
+			$("#file").on("input", function(e) { // change 사용해도 무방
+				// alert("파일 선택");
 				// 취소 누를 때 처리(파일이 비워지므로 name을 뽑다가 에러)
 				if (e.target.files[0] == null) {
 					$("#file").val(""); // 보이진 않지만 파일 태그에 올라온 것 제거
@@ -112,11 +129,11 @@
 				
 				//alert("파일 선택");
 				let fileName = e.target.files[0].name;
-				console.log(fileName);
+				//console.log(fileName);
 				
 				// 1) 유효성 체크
 				let ext = fileName.split(".").pop().toLowerCase();
-				console.log(ext);
+				//console.log(ext);
 				
 				if (ext != "gif" && ext != "png" && ext != "jpg") {
 					alert("이미지 파일만 업로드 할 수 있습니다.");
@@ -257,8 +274,42 @@
 					, error:function(e) {
 						alert("좋아요 처리에 실패했습니다.");
 					}
-				});
+				});			
+			});
+			// 더보기 .. 클릭 => 모달이 뜬다. 2) postId를 모달창에 껴넣기 
+			$(".more-btn").on("click", function(){
+				let postId = $(this).data("post-id"); //get 
+				//alert(postId);
 				
+				// 1개만 존재하는 모달을 재활용함.  
+				// modal에 data-post-id를 심어 둔다
+				$("#model").data('post-id', postId); // set 
+			});
+			
+			// modal 안에 있는 삭제하기 클릭 => 모델 안에는 삭제할 글번호가 있는 상태 
+			$("#postDelBtn").on('click' , function(e){
+				e.preventDefault();
+				//alert("삭제하기");
+				
+				let postId = $("#modal").data("post-id");
+				//alert(postId);
+				
+				$.ajax({
+					type:"DELETE"
+					, url: "/post/delete"  
+					, data:{"postId":postId}
+					, success:function(data) {
+						if (data.code == 200) {
+							location.reload(true);
+						} else if(data.code = 400){
+							alert(data.error_message);
+							location.reload(true);
+						}
+					}
+					, error:function(e) {
+						alert("글 삭제에 실패했습니다.");
+					}
+				});	
 			});
 		});
     </script>

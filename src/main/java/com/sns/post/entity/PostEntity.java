@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString
@@ -22,6 +23,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Getter	
+@Setter
 @Table(name = "post")
 @Entity
 public class PostEntity {
