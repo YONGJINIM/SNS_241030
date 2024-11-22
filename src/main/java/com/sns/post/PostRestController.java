@@ -15,52 +15,60 @@ import com.sns.post.bo.PostBO;
 
 import jakarta.servlet.http.HttpSession;
 
-@RestController
 @RequestMapping("/post")
+@RestController
 public class PostRestController {
-	
+
 	@Autowired
 	private PostBO postBO;
 	
+	/**
+	 * 글쓰기 API
+	 * @param content
+	 * @param file
+	 * @param session
+	 * @return
+	 */
 	@PostMapping("/create")
-	public Map<String , Object> create(
-			@RequestParam(value = "content" , required = false) String content,
+	public Map<String, Object> create(
+			@RequestParam(value = "content", required = false) String content,
 			@RequestParam("file") MultipartFile file,
 			HttpSession session) {
 		
-	Integer userId = (Integer) session.getAttribute("userId");
-	String userLoginId = (String) session.getAttribute("userLoginId");
-
+		Integer userId = (Integer)session.getAttribute("userId");
+		String userLoginId = (String)session.getAttribute("userLoginId");
 		
-		// 로그인 여부를 확인해야 해서 응답을 빠르게 내려야 함. 
-		Map<String , Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<>();
+		if (userId == null) {
+			result.put("code", 403); // 비로그인 상태
+			result.put("error_message", "로그인을 해주세요.");
+			return result;
+		}
 		
-		if(userId == null) {
-		result.put("code", 400);	
-		result.put("error_message", "로그인을 해주세요");
-		return result; // 로그인이 안되어 있다면 아래로 갈 수 없음.
-		} 
-	
-		// db insert
 		postBO.addPost(userId, userLoginId, content, file);
 		
-		// 성공 
 		result.put("code", 200);
 		result.put("result", "성공");
 		return result;
 	}
+	
 	@DeleteMapping("/delete")
-	public Map<String , Object> delete(
+	public Map<String, Object> delete(
 			@RequestParam("postId") int postId,
-			HttpSession session){
-			
-			// userId  
-			int userId = (int)session.getAttribute("userId");
-								
-			// 응답
-			Map<String , Object> result = new HashMap<>();
-			result.put("code", 200);
-			result.put("result", "성공");
+			HttpSession session) {
+		
+		Map<String, Object> result = new HashMap<>();
+		Integer userId = (Integer)session.getAttribute("userId");
+		if (userId == null) {
+			result.put("code", 403);
+			result.put("error_message", "로그인이 필요합니다.");
 			return result;
+		}
+		
+		postBO.deletePostByPostId(postId);
+		
+		result.put("code", 200);
+		result.put("result", "성공");
+		return result;
 	}
-  }
+}

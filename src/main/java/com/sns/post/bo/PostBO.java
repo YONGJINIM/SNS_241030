@@ -1,9 +1,7 @@
 package com.sns.post.bo;
 
-
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,21 +12,18 @@ import com.sns.like.bo.LikeBO;
 import com.sns.post.entity.PostEntity;
 import com.sns.post.repository.PostRepository;
 
-@lombok.extern.slf4j.Slf4j
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class PostBO {
 	
-	@Autowired
 	private PostRepository postRepository;
-	
-	@Autowired
-	private LikeBO likeBO;
-
-	@Autowired
 	private CommentBO commentBO;
-	
-    @Autowired
-    private FileManagerService fileManagerService;
+	private LikeBO likeBO;
+	private FileManagerService fileManager;
 
 	// input:X
 	// output:List<PostEntity>
@@ -36,43 +31,41 @@ public class PostBO {
 		return postRepository.findByOrderByIdDesc();
 	}
 	
-    public PostEntity addPost(
-    		int userId, 
-    		String userLoginId, 
-    		String content, 
-    		MultipartFile file) {
-    		
-    String imagePath = fileManagerService.uploadFile(file, userLoginId);
-   
-    	return postRepository.save(
-    			PostEntity.builder()
-    			.userId(userId)
-    			.content(content)
-    			.imagePath(imagePath)
-    			.build());
-  
-    }
-    @Transactional
-    public void deletePostByPostId(int postId, int userId) {
-        // 삭제할 글이 있는지 확인
-        PostEntity post = postRepository.findByIdAndUserId(postId, userId).orElse(null);
-        if (post == null) {
-            log.info("[글 삭제] post is null. postId:{}, userId:{}", postId, userId);
-            return;
-        }
+	// input: 파라미터들 output:PostEntity
+	public PostEntity addPost(int userId, String userLoginId, String content, MultipartFile file) {
 
-        // 댓글 삭제
-        commentBO.deleteCommentByPostId(postId);
+		// 업로드 후 imagePath를 받아옴
+		String imagePath = fileManager.uploadFile(file, userLoginId);
 
-        // 좋아요 삭제
-        likeBO.deleteLikePostId(postId);
-
-        // 글 삭제
-        postRepository.delete(post);
-
-        // 기존 글에 이미지가 있다면 폴더/파일 삭제
-        if (post.getImagePath() != null) {
-            fileManagerService.deleteFile(post.getImagePath());
-        }
-    }
+		return postRepository.save(
+				PostEntity.builder()
+				.userId(userId)
+				.content(content)
+				.imagePath(imagePath)
+				.build());
+	}
+	
+	// input: postId
+	// output: X
+	@Transactional
+	public void deletePostByPostId(int postId) {
+		// 1. 삭제할 글이 있나? => 이미지 path
+		PostEntity post = postRepository.findById(postId).orElse(null);
+		if (post == null) {
+			log.info("[글 삭제] post is null. postId:{}", postId);
+			return;
+		}
+		
+		// 2. 글 삭제 - postId
+		postRepository.delete(post); // 엔티티를 넘기지만 id(pk)로 삭제해줌
+		
+		// 3. 댓글 삭제 - postId
+		commentBO.deleteCommentListByPostId(postId);
+		
+		// 4. 좋아요 삭제 - postId
+		likeBO.deleteLikeListByPostId(postId);
+		
+		// 5. 이미지 파일 삭제 - 1번에서 가져온 postEntity -> 이미지path 
+		fileManager.deleteFile(post.getImagePath());
+	}
 }

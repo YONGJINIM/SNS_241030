@@ -33,7 +33,7 @@ public class CommentBO {
 		List<CommentDTO> commentDTOList = new ArrayList<>();				
 		
 		// 글에 해당하는 댓글을 가져온다 (List<Comment>)		
-		List<Comment> commentList = commentMapper.selectCommentByPostId(postId);
+		List<Comment> commentList = commentMapper.selectCommentListByPostId(postId);
 		
 		// 반복문 => Comment => CommentDTO => List에 담기 
 		for(Comment comment : commentList) {
@@ -41,12 +41,10 @@ public class CommentBO {
 			
 			// 댓글 1개 
 			commentDTO.setComment(comment);
-			
-			
+						
 			// 댓글쓴이
 			commentDTO.setUser(userBO.getUserEntityById(comment.getUserId()));
-			
-			
+						
 			// list에 DTO 넣기
 			commentDTOList.add(commentDTO);
 		
@@ -57,7 +55,7 @@ public class CommentBO {
 		commentMapper.deleteCommentById(commentId);
 	}
 	
-	public void deleteCommentByPostId(int postId) {
-		commentMapper.deleteCommentByPostId(postId);
+	public void deleteCommentListByPostId(int postId) {
+		commentMapper.deleteCommentListByPostId(postId);
 	}
 }
