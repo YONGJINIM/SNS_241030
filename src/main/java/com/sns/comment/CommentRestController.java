@@ -20,13 +20,19 @@ import lombok.RequiredArgsConstructor;
 public class CommentRestController {
 
 	private final CommentBO commentBO;
-
 	
 	// DI(Dependency Injection)
 //	public CommentRestController(CommentBO commentBO) {
 //		this.commentBO = commentBO;
 //	}
 	
+	/**
+	 * 댓글 쓰기 API
+	 * @param postId
+	 * @param content
+	 * @param session
+	 * @return
+	 */
 	@PostMapping("/create") 
 	public Map<String, Object> create(
 			@RequestParam("postId") int postId,
@@ -37,7 +43,7 @@ public class CommentRestController {
 		Integer userId = (Integer)session.getAttribute("userId");
 		Map<String, Object> result = new HashMap<>();
 		if (userId == null) {
-			result.put("code", 400);
+			result.put("code", 403);
 			result.put("error_message", "로그인을 해주세요.");
 			return result;
 		}
@@ -50,6 +56,7 @@ public class CommentRestController {
 		result.put("result", "성공");
 		return result;
 	}
+	
 	@DeleteMapping("/delete")
 	public Map<String, Object> delete(
 			@RequestParam("commentId") int commentId,
@@ -59,7 +66,7 @@ public class CommentRestController {
 		Map<String, Object> result = new HashMap<>();
 		Integer userId = (Integer)session.getAttribute("userId");
 		if (userId == null) {
-			result.put("code", 400);
+			result.put("code", 403);
 			result.put("error_message", "로그인이 되지 않은 사용자 입니다.");
 			return result;
 		}
